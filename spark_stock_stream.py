@@ -66,7 +66,7 @@ aapl_ma_df = aapl_ma10_df.join(aapl_ma40_df, on="window")
 
 # Write the moving averages to the console
 aapl_ma_df.writeStream \
-    .outputMode("complete") \
+    .outputMode("append") \
     .format("console") \
     .option("truncate", False) \
     .start()
