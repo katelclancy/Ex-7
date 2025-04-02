@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+"""
+!pip install pandas
+"""
 import time
 import pandas as pd
 
