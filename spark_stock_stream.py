@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import split, col, trim
+from pyspark.sql.functions import split, col, trim, window, avg
 from pyspark.sql.types import TimestampType, DoubleType
 
 # Initialize Spark session
@@ -35,14 +35,38 @@ aapl_df = df.filter(col("symbol") == "AAPL")
 msft_df = df.filter(col("symbol") == "MSFT")
 
 # Show both AAPL and MSFT streams to console (just for testing)
-aapl_query = aapl_df.writeStream \
-    .outputMode("append") \
-    .format("console") \
-    .option("truncate", False) \
-    .start()
+# aapl_query = aapl_df.writeStream \
+#     .outputMode("append") \
+#     .format("console") \
+#     .option("truncate", False) \
+#     .start()
 
-msft_query = msft_df.writeStream \
-    .outputMode("append") \
+# msft_query = msft_df.writeStream \
+#     .outputMode("append") \
+#     .format("console") \
+#     .option("truncate", False) \
+#     .start()
+
+# 10-day moving average AAPL
+aapl_ma10_df = aapl_df.groupBy(
+    window("datetime", "3900 minutes", "15 minutes")
+).agg(
+    avg("close").alias("MA10")
+)
+      
+# 40-day moving average AAPL
+aapl_ma40_df = aapl_df.groupBy(
+    window("datetime", "15600 minutes", "15 minutes")
+).agg(
+    avg("close").alias("MA40")
+)
+
+# Combine into one df for AAPL moving averages
+aapl_ma_df = aapl_ma10_df.join(aapl_ma40_df, on="window")
+
+# Write the moving averages to the console
+aapl_ma_df.writeStream \
+    .outputMode("complete") \
     .format("console") \
     .option("truncate", False) \
     .start()
