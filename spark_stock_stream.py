@@ -61,12 +61,16 @@ aapl_ma40_df = aapl_df.groupBy(
     avg("close").alias("MA40")
 )
 
-# Combine into one df for AAPL moving averages
-aapl_ma_df = aapl_ma10_df.join(aapl_ma40_df, on="window")
+# Write 10-day MA
+aapl_ma10_df.writeStream \
+    .outputMode("complete") \
+    .format("console") \
+    .option("truncate", False) \
+    .start()
 
-# Write the moving averages to the console
-aapl_ma_df.writeStream \
-    .outputMode("append") \
+# Write 40-day MA
+aapl_ma40_df.writeStream \
+    .outputMode("complete") \
     .format("console") \
     .option("truncate", False) \
     .start()
