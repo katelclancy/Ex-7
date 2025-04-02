@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import split, col
+from pyspark.sql.functions import split, col, trim
 from pyspark.sql.types import TimestampType, DoubleType
 
 # Initialize Spark session
@@ -24,9 +24,10 @@ split_cols = split(lines["value"], ",")
 
 # Parse and cast columns
 df = lines.select(
-    split_cols.getItem(0).alias("datetime"),
-    split_cols.getItem(1).alias("symbol"),
-    split_cols.getItem(2).cast(DoubleType()).alias("close")
+    col("value"),
+    trim(split_cols.getItem(0)).alias("datetime"),
+    trim(split_cols.getItem(1)).alias("symbol"),
+    trim(split_cols.getItem(2)).cast(DoubleType()).alias("close")
 ).withColumn("datetime", col("datetime").cast(TimestampType()))
 
 # Filter into two separate streams
