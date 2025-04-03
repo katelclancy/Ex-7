@@ -52,18 +52,21 @@ if __name__ == "__main__":
         trim(split_cols.getItem(2)).cast(DoubleType()).alias("close")
     ).withColumn("datetime", col("datetime").cast(TimestampType()))
 
-    # Just do ONE thing at a time to start: average price by symbol every 15 mins
-    avg_df = df.groupBy(
-        window(col("datetime"), "15 minutes"),
-        col("symbol")
-    ).agg(
-        avg("close").alias("avg_close")
-    )
+    # Filter into two separate streams
+    aapl_df = df.filter(col("symbol") == "AAPL")
+    msft_df = df.filter(col("symbol") == "MSFT")
 
-    query = avg_df.writeStream \
+    aapl_query = aapl_df.writeStream \
+        .outputMode("complete") \
+        .format("console") \
+        .option("truncate", False) \
+        .start()
+        
+    msft_query = msft_df.writeStream \
         .outputMode("complete") \
         .format("console") \
         .option("truncate", False) \
         .start()
 
-    query.awaitTermination()
+    aapl_query.awaitTermination()
+    msft_query.awaitTermination()
