@@ -142,13 +142,13 @@ if __name__ == "__main__":
     
     # Write streams
     aaplsignal_query = aapl_signal_output.writeStream \
-    .outputMode("append") \
+    .outputMode("complete") \
     .format("console") \
     .option("truncate", False) \
     .start()
     
     msftsignal_query = msft_signal_output.writeStream \
-    .outputMode("append") \
+    .outputMode("complete") \
     .format("console") \
     .option("truncate", False) \
     .start()
