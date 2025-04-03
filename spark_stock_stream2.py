@@ -57,13 +57,13 @@ if __name__ == "__main__":
     msft_df = df.filter(col("symbol") == "MSFT")
 
     aapl_query = aapl_df.writeStream \
-        .outputMode("complete") \
+        .outputMode("append") \
         .format("console") \
         .option("truncate", False) \
         .start()
         
     msft_query = msft_df.writeStream \
-        .outputMode("complete") \
+        .outputMode("append") \
         .format("console") \
         .option("truncate", False) \
         .start()
