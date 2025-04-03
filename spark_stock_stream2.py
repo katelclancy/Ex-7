@@ -62,11 +62,11 @@ if __name__ == "__main__":
         .option("truncate", False) \
         .start()
         
-    msft_query = msft_df.writeStream \
-        .outputMode("append") \
-        .format("console") \
-        .option("truncate", False) \
-        .start()
+  #  msft_query = msft_df.writeStream \
+   #     .outputMode("append") \
+    #    .format("console") \
+     #   .option("truncate", False) \
+      #  .start()
 
     aapl_query.awaitTermination()
-    msft_query.awaitTermination()
+  #  msft_query.awaitTermination()
