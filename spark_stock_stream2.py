@@ -56,17 +56,43 @@ if __name__ == "__main__":
     aapl_df = df.filter(col("symbol") == "AAPL")
     msft_df = df.filter(col("symbol") == "MSFT")
 
-    aapl_query = aapl_df.writeStream \
-        .outputMode("append") \
-        .format("console") \
-        .option("truncate", False) \
-        .start()
-        
-    msft_query = msft_df.writeStream \
-        .outputMode("append") \
-        .format("console") \
-        .option("truncate", False) \
-        .start()
+    # Moving average windows: 10 and 40 "days" (scaled to minute data)
+    aapl_ma10 = aapl_df.groupBy(
+    window("datetime", "3900 minutes", "15 minutes")
+    ).agg(
+    avg("close").alias("MA10")
+    )
 
-    aapl_query.awaitTermination()
-    msft_query.awaitTermination()
+    aapl_ma40 = aapl_df.groupBy(
+    window("datetime", "15600 minutes", "15 minutes")
+    ).agg(
+    avg("close").alias("MA40")
+    )
+
+    aapl_ma10_query = aapl_ma10.writeStream \
+        .outputMode("complete") \
+        .format("console") \
+        .option("truncate", False) \
+        .start()
+    
+    aapl_ma40_query = aapl_ma40.writeStream \
+    .outputMode("complete") \
+    .format("console") \
+    .option("truncate", False) \
+    .start()
+    
+    # aapl_query = aapl_df.writeStream \
+    #     .outputMode("append") \
+    #     .format("console") \
+    #     .option("truncate", False) \
+    #     .start()
+        
+    # msft_query = msft_df.writeStream \
+    #      .outputMode("append") \
+    #      .format("console") \
+    #      .option("truncate", False) \
+    #      .start()
+
+    spark.streams.awaitAnyTermination()
+    # aapl_query.awaitTermination()
+    # msft_query.awaitTermination()
