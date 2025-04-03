@@ -12,8 +12,7 @@ from pyspark.sql.functions import split, col, trim, window, avg
 from pyspark.sql.types import TimestampType, DoubleType
 from pyspark import SparkContext
 
-def setLogLevel(sc, level):
-    spark = SparkSession(sc)
+def setLogLevel(spark, level):
     spark.sparkContext.setLogLevel(level)
 
 if __name__ == "__main__":
